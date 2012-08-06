@@ -21,6 +21,7 @@ public class ReplyHelper {
         
         StatusUpdate update = new StatusUpdate(text);
         update.inReplyToStatusId(status.getId());
-        twitter.updateStatus(update);
+        Status reslt = twitter.updateStatus(update);
+        System.out.println("Reply:statusId="+reslt.getId()+"inReplyToStatusId="+status.getId()+"text="+text);
     }
 }

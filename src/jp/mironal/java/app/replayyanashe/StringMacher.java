@@ -35,6 +35,7 @@ public class StringMacher implements OnMatchListener {
     @Override
     public void onMatch(Status status) {
 
+        System.out.println("onMatch:"+word);
         String word = makeReplyWord();
 
         try {

@@ -27,9 +27,8 @@ public class ReplyHandler {
         @Override
         public void onStatus(Status status) {
             String text = status.getText();
+            System.out.println("onStatus:text="+text);
             List<Token> tokens = tokenizer.tokenize(text);
-            System.out.println(text);
-
             for (Token token : tokens) {
                 if (token.isKnown()) {
                     execRepry(status, token);
