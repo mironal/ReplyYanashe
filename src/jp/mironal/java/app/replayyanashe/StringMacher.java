@@ -1,9 +1,14 @@
 package jp.mironal.java.app.replayyanashe;
 
+import java.util.logging.Logger;
+
 import twitter4j.Status;
 import twitter4j.TwitterException;
 
 public class StringMacher implements OnMatchListener {
+
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(StringMacher.class);
 
     private String word;
     private int cnt = 0;
@@ -35,12 +40,18 @@ public class StringMacher implements OnMatchListener {
     @Override
     public void onMatch(Status status) {
 
-        System.out.println("onMatch:"+word);
+        LOGGER.info("onMatch:" + word);
         String word = makeReplyWord();
 
         try {
             if ((word != null) && (word.length() > 0)) {
                 replyHelper.reply(status, word);
+            }else{
+                if( word == null){
+                    LOGGER.warning("word is null.");
+                }else if(word.length() == 0) {
+                    LOGGER.warning("word is empty.");
+                }
             }
         } catch (TwitterException e) {
             // とりあえずログ出すだけ.

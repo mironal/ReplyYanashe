@@ -9,16 +9,22 @@ import org.atilika.kuromoji.Tokenizer;
 import twitter4j.Status;
 
 public class ReplyHandler {
-
-    private OnMatchListener chinkoListener = new StringMacher("チンコ", "chinko.yanashe");
-
-    private OnMatchListener mankoListener = new StringMacher("マンコ", "manko.yanashe");
     
-    private OnMatchListener unkoListener = new StringMacher("ウンコ", "unko.yanashe");
+    private static java.util.logging.Logger LOGGER = LoggerFactory.getLogger(ReplyHandler.class);
 
-    private OnMatchListener oppaiListener = new StringMacher("オッパイ", "oppai.yanashe");
+    private OnMatchListener chinkoListener = new StringMacher("チンコ",
+            "chinko.yanashe");
 
-    private ArrayList<OnMatchListener> matchListeners = new ArrayList<>();
+    private OnMatchListener mankoListener = new StringMacher("マンコ",
+            "manko.yanashe");
+
+    private OnMatchListener unkoListener = new StringMacher("ウンコ",
+            "unko.yanashe");
+
+    private OnMatchListener oppaiListener = new StringMacher("オッパイ",
+            "oppai.yanashe");
+
+    private ArrayList<OnMatchListener> matchListeners = new ArrayList<OnMatchListener>();
 
     private OnStatusListener statusListener = new OnStatusListener() {
 
@@ -27,13 +33,31 @@ public class ReplyHandler {
         @Override
         public void onStatus(Status status) {
             String text = status.getText();
-            System.out.println("onStatus:text="+text);
+            LOGGER.info("onStatus:user="+status.getUser().getScreenName()+",text="+text);
+            // リツイートだったら処理しない.
+            if( status.isRetweet()){
+                LOGGER.info("tweet is retweet. will be ignored.");
+                return;
+            }
+            
             List<Token> tokens = tokenizer.tokenize(text);
+            LOGGER.info("tokens="+tokensToString(tokens));
             for (Token token : tokens) {
                 if (token.isKnown()) {
                     execRepry(status, token);
                 }
             }
+        }
+        
+        private String tokensToString(List<Token> tokens){
+            StringBuilder builder = new StringBuilder();
+            for( Token token : tokens){
+                if(builder.length() != 0){
+                    builder.append('\t');
+                }
+                builder.append(token.getAllFeatures());
+            }
+            return builder.toString();
         }
 
         private void execRepry(Status status, Token token) {
@@ -57,7 +81,7 @@ public class ReplyHandler {
         userStream.addOnStatusListener(statusListener);
         userStream.start();
     }
-    
+
     /**
      * 
      * @param listener

@@ -16,7 +16,7 @@ import twitter4j.UserStreamListener;
 public class PollUserStream {
 
     private ArrayList<OnStatusListener> onStatusListeners =
-             new ArrayList<>();
+             new ArrayList<OnStatusListener>();
              
     /**
      * OnStatus発生時に呼ばれるリスナを追加.
