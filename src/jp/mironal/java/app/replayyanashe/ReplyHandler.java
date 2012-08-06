@@ -10,42 +10,15 @@ import twitter4j.Status;
 
 public class ReplyHandler {
 
-    private StringMacher chinkoListener = new StringMacher("チンコ") {
-        
-        // TODO ファイルから読み込んでランダムに選択する.
-        @Override
-        public String makeReplyWord() {
-            return "bar";
-        }
-    };
+    private OnMatchListener chinkoListener = new StringMacher("チンコ", "chinko.yanashe");
 
-    private StringMacher mankoListener = new StringMacher("マンコ") {
-                
-        @Override
-        public String makeReplyWord() {
-            return "foo";
-        }
-    };
+    private OnMatchListener mankoListener = new StringMacher("マンコ", "manko.yanashe");
     
-    private StringMacher unkoListener = new StringMacher("ウンコ") {
+    private OnMatchListener unkoListener = new StringMacher("ウンコ", "unko.yanashe");
 
-        @Override
-        public String makeReplyWord() {
-            return "huga";
-        }
-    };
-
-    private StringMacher oppaiListener = new StringMacher("オッパイ") {
-        
-        @Override
-        public String makeReplyWord() {
-            return "hoge";
-        }
-    };
+    private OnMatchListener oppaiListener = new StringMacher("オッパイ", "oppai.yanashe");
 
     private ArrayList<OnMatchListener> matchListeners = new ArrayList<>();
-
-
 
     private OnStatusListener statusListener = new OnStatusListener() {
 
