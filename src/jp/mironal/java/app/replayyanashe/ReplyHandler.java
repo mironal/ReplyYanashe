@@ -7,29 +7,27 @@ import org.atilika.kuromoji.Token;
 import org.atilika.kuromoji.Tokenizer;
 
 import twitter4j.Status;
-import twitter4j.TwitterException;
 
 public class ReplyHandler {
 
-    private ReplyHelper replyHelper = new ReplyHelper();
-
-    private StringMacher unkoListener = new StringMacher("ウンコ") {
-
+    private StringMacher chinkoListener = new StringMacher("チンコ") {
+        
+        // TODO ファイルから読み込んでランダムに選択する.
         @Override
-        public void onMatch(Status status) {
-            // Reply
-            String word = makeReplyWord();
-            System.out
-                    .println("ReplyHandler.unkoListener.new StringMacher() {...}.onMatch()");
-            try {
-                if( false ){
-                    replyHelper.reply(status, word);
-                }
-            } catch (TwitterException e) {
-                // とりあえずログ出すだけ.
-                e.printStackTrace();
-            }
+        public String makeReplyWord() {
+            return "bar";
         }
+    };
+
+    private StringMacher mankoListener = new StringMacher("マンコ") {
+                
+        @Override
+        public String makeReplyWord() {
+            return "foo";
+        }
+    };
+    
+    private StringMacher unkoListener = new StringMacher("ウンコ") {
 
         @Override
         public String makeReplyWord() {
@@ -38,22 +36,7 @@ public class ReplyHandler {
     };
 
     private StringMacher oppaiListener = new StringMacher("オッパイ") {
-        @Override
-        public void onMatch(Status status) {
-            // Reply
-            String word = makeReplyWord();
-            System.out
-                    .println("ReplyHandler.oppaiListener.new StringMacher() {...}.onMatch()");
-            try {
-                if(false){
-                    replyHelper.reply(status, word);
-                }
-            } catch (TwitterException e) {
-                // とりあえずログ出すだけ.
-                e.printStackTrace();
-            }
-        }
-
+        
         @Override
         public String makeReplyWord() {
             return "hoge";
@@ -62,29 +45,7 @@ public class ReplyHandler {
 
     private ArrayList<OnMatchListener> matchListeners = new ArrayList<>();
 
-    /**
-     * 
-     * @param listener
-     * @return {@link ArrayList#add(Object)}の戻り値
-     */
-    public boolean addMatchListener(OnMatchListener listener) {
-        if (listener == null) {
-            throw new NullPointerException("listener is null.");
-        }
-        return matchListeners.add(listener);
-    }
 
-    /**
-     * 
-     * @param listener
-     * @return {@link ArrayList#remove(Object)}の戻り値
-     */
-    public boolean removeMatchListener(OnMatchListener listener) {
-        if (listener == null) {
-            throw new NullPointerException("listener is null.");
-        }
-        return matchListeners.remove(listener);
-    }
 
     private OnStatusListener statusListener = new OnStatusListener() {
 
@@ -115,10 +76,38 @@ public class ReplyHandler {
     private PollUserStream userStream = new PollUserStream();
 
     public ReplyHandler() {
+        // リスナ登録
+        addMatchListener(chinkoListener);
+        addMatchListener(mankoListener);
         addMatchListener(oppaiListener);
         addMatchListener(unkoListener);
+        // streamにリスナを登録して収集開始.
         userStream.addOnStatusListener(statusListener);
         userStream.start();
+    }
+    
+    /**
+     * 
+     * @param listener
+     * @return {@link ArrayList#add(Object)}の戻り値
+     */
+    public boolean addMatchListener(OnMatchListener listener) {
+        if (listener == null) {
+            throw new NullPointerException("listener is null.");
+        }
+        return matchListeners.add(listener);
+    }
+
+    /**
+     * 
+     * @param listener
+     * @return {@link ArrayList#remove(Object)}の戻り値
+     */
+    public boolean removeMatchListener(OnMatchListener listener) {
+        if (listener == null) {
+            throw new NullPointerException("listener is null.");
+        }
+        return matchListeners.remove(listener);
     }
 
     public static void main(String[] args) {
