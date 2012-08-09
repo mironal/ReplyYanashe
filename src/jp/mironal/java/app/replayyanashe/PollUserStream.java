@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
+import twitter4j.TwitterException;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.User;
@@ -14,7 +15,7 @@ import twitter4j.UserStreamListener;
 
 
 public class PollUserStream {
-
+    
     private ArrayList<OnStatusListener> onStatusListeners =
              new ArrayList<OnStatusListener>();
              
@@ -144,6 +145,25 @@ public class PollUserStream {
             // ignore
         }
     };
+    
+    /**
+     * ユーザIDを取得する.
+     * Twitterの例外はこのクラスに押しこみたいので、失敗した場合は負数を返す.
+     * -1 : IllegalStateException
+     * -2 : TwitterException
+     * 
+     */
+    public long getMyId() {
+        try {
+            return stream.getId();
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+            return -1;
+        } catch (TwitterException e) {
+            e.printStackTrace();
+            return -2;
+        }
+    }
 
     public PollUserStream start() {
         stream.addListener(listener);

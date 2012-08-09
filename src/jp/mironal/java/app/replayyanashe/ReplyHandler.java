@@ -9,8 +9,9 @@ import org.atilika.kuromoji.Tokenizer;
 import twitter4j.Status;
 
 public class ReplyHandler {
-    
-    private static java.util.logging.Logger LOGGER = LoggerFactory.getLogger(ReplyHandler.class);
+
+    private static java.util.logging.Logger LOGGER = LoggerFactory
+            .getLogger(ReplyHandler.class);
 
     private OnMatchListener chinkoListener = new StringMacher("チンコ",
             "chinko.yanashe");
@@ -33,26 +34,33 @@ public class ReplyHandler {
         @Override
         public void onStatus(Status status) {
             String text = status.getText();
-            LOGGER.info("onStatus:user="+status.getUser().getScreenName()+",text="+text);
+            LOGGER.info("onStatus:user=" + status.getUser().getScreenName()
+                    + ",text=" + text);
             // リツイートだったら処理しない.
-            if( status.isRetweet()){
+            if (status.isRetweet()) {
                 LOGGER.info("tweet is retweet. will be ignored.");
                 return;
             }
-            
+
+            // 自分のツイートには反応しない.
+            if (status.getUser().getId() == myId) {
+                LOGGER.info("tweet by me.");
+                return;
+            }
+
             List<Token> tokens = tokenizer.tokenize(text);
-            LOGGER.info("tokens="+tokensToString(tokens));
+            LOGGER.info("tokens=" + tokensToString(tokens));
             for (Token token : tokens) {
                 if (token.isKnown()) {
                     execRepry(status, token);
                 }
             }
         }
-        
-        private String tokensToString(List<Token> tokens){
+
+        private String tokensToString(List<Token> tokens) {
             StringBuilder builder = new StringBuilder();
-            for( Token token : tokens){
-                if(builder.length() != 0){
+            for (Token token : tokens) {
+                if (builder.length() != 0) {
                     builder.append('\t');
                 }
                 builder.append(token.getAllFeatures());
@@ -71,6 +79,8 @@ public class ReplyHandler {
 
     private PollUserStream userStream = new PollUserStream();
 
+    private long myId = -1;
+
     public ReplyHandler() {
         // リスナ登録
         addMatchListener(chinkoListener);
@@ -80,6 +90,11 @@ public class ReplyHandler {
         // streamにリスナを登録して収集開始.
         userStream.addOnStatusListener(statusListener);
         userStream.start();
+
+        myId = userStream.getMyId();
+        if (myId < 0) {
+            LOGGER.warning("get myId fault. myId = " + myId);
+        }
     }
 
     /**
