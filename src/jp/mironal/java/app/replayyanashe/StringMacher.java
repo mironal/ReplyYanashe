@@ -31,7 +31,13 @@ public class StringMacher implements OnMatchListener {
     @Override
     public String makeReplyWord() {
         cnt++;
-        if ((cnt % 10) == 0) {
+        // ファイルが存在しない場合は毎回探しに行く.
+        // 　ファイルが作られた時にすぐに気がつけるようにするため.
+        if (!reader.isFileExist()) {
+            reader.updateLinage();
+        } else if ((cnt % 10) == 0) {
+            // 10回に一度ぐらい行数を再読み込みする.
+            // ファイルに新しい行が追加されている場合があるため.
             reader.updateLinage();
         }
         return reader.randomRead();
@@ -41,16 +47,17 @@ public class StringMacher implements OnMatchListener {
     public void onMatch(Status status) {
 
         LOGGER.info("onMatch:" + word);
-        String word = makeReplyWord();
+
+        String replyWord = makeReplyWord();
 
         try {
-            if ((word != null) && (word.length() > 0)) {
-                replyHelper.reply(status, word);
-            }else{
-                if( word == null){
-                    LOGGER.warning("word is null.");
-                }else if(word.length() == 0) {
-                    LOGGER.warning("word is empty.");
+            if ((replyWord != null) && (replyWord.length() > 0)) {
+                replyHelper.reply(status, replyWord);
+            } else {
+                if (replyWord == null) {
+                    LOGGER.warning("replyWord is null.");
+                } else if (replyWord.length() == 0) {
+                    LOGGER.warning("replyWord is empty.");
                 }
             }
         } catch (TwitterException e) {

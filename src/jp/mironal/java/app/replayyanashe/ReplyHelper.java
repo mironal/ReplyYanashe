@@ -22,11 +22,15 @@ public class ReplyHelper {
         if (text == null) {
             throw new NullPointerException("text is null.");
         }
-        if( text.length() == 0){
+        if (text.length() == 0) {
             throw new IllegalArgumentException("text is empty.");
         }
 
-        StatusUpdate update = new StatusUpdate(text);
+        StringBuilder builder = new StringBuilder();
+        builder.append(text).append(" @")
+                .append(status.getUser().getScreenName());
+
+        StatusUpdate update = new StatusUpdate(builder.toString());
         update.inReplyToStatusId(status.getId());
         Status reslt = twitter.updateStatus(update);
         LOGGER.info("Reply:statusId=" + reslt.getId() + "inReplyToStatusId="
